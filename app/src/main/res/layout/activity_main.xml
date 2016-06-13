@@ -9,41 +9,150 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="mkt.com.ar.vigilante.MainActivity">
-
-
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Latitud:"
-        android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:id="@+id/layout1">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latitud:"
+            android:id="@+id/tvLabelLatitud"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="---"
+            android:id="@+id/tvLatitud"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/tvLabelLatitud"
+            android:layout_marginLeft="15dp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Longitud:"
-        android:id="@+id/textView2"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentStart="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="---"
-        android:id="@+id/tvLatitud"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/textView"
-        android:layout_marginLeft="15dp"
-        android:textStyle="bold" />
 
-    <TextView
-        android:layout_width="wrap_content"
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="---"
-        android:id="@+id/tvLongitud"
-        android:layout_alignTop="@+id/textView2"
-        android:layout_toEndOf="@+id/textView2"
-        android:layout_marginLeft="15dp"
-        android:textStyle="bold" />
+        android:id="@+id/layout2"
+        android:layout_below="@+id/layout1">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Longitud:"
+            android:id="@+id/tvLabelLongitud"
+            />
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="---"
+            android:id="@+id/tvLongitud"
+            android:layout_toEndOf="@+id/tvLabelLongitud"
+            android:layout_marginLeft="15dp"
+            android:textStyle="bold" />
+
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/layout4"
+        android:layout_below="@+id/layout2">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Velocidad Actual:"
+            android:id="@+id/tvLabelVelocidadActial"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="---"
+            android:id="@+id/tvVelocidadActial"
+            android:layout_toEndOf="@+id/tvLabelVelocidadActial"
+            android:layout_marginLeft="15dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/layout4">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/etIdVendedor"
+            android:layout_below="@+id/textView2"
+            android:layout_alignParentStart="true"
+            android:hint="ID Interno" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/etNombreVendedor"
+            android:layout_below="@+id/textView2"
+            android:layout_alignParentStart="true"
+            android:hint="Nombre del Vendedor" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Iniciar Servicio"
+            android:id="@+id/btnIniciarServicio"
+            android:layout_below="@+id/editText"
+            android:gravity="center"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Parar Servicio"
+            android:id="@+id/btnPararServicio"
+            android:layout_gravity=""
+   />
+
+
+
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:map="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="mkt.com.ar.vigilante.localizacion" />
+    </LinearLayout>
+
+    </LinearLayout>
+
+
+
+
 </RelativeLayout>

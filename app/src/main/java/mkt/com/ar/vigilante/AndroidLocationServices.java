@@ -20,6 +20,10 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Alberto on 08/06/2016.
  */
@@ -50,7 +54,8 @@ public class AndroidLocationServices extends Service {
 
         // Toast.makeText(getApplicationContext(), "Service Created",
         // Toast.LENGTH_SHORT).show();
-
+        // this acquires the wake lock
+        wakeLock.acquire();
         Log.e("Google", "Service Created");
 
     }
@@ -68,7 +73,7 @@ public class AndroidLocationServices extends Service {
                 .getSystemService(Context.LOCATION_SERVICE);
 
         try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, listener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 1, listener); //Update location cada 500ms o 0 mts
         } catch (SecurityException  e) {
 
             Log.e("Permisos", "No tiene permisos");
@@ -100,14 +105,29 @@ public class AndroidLocationServices extends Service {
                     jsonObject.put("longitude", location.getLongitude());
 
                     jsonArray.put(jsonObject);
-
-                    Coordenada  coordenada = new Coordenada(location.getLatitude(), location.getLongitude());
-
-                    Log.e("request", jsonArray.toString());
+                    final ClaseGlobal globalVariable = (ClaseGlobal) getApplicationContext();
 
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference("coordenadas");
-                    myRef.setValue(coordenada);
+                    //Nodo principal
+                    DatabaseReference myRef = database.getReference("vendedores/" + String.valueOf(globalVariable.getVendedorId()));
+                    String key = myRef.push().getKey();
+                    Coordenada  coordenada = new Coordenada();
+                    //Seteamos los valores
+                    coordenada.setVendedorId(globalVariable.getVendedorId());
+                    coordenada.setDisplayName(globalVariable.getNombreVendedor());
+                    coordenada.setLatitud(location.getLatitude());
+                    coordenada.setLongitud(location.getLongitude());
+                    coordenada.setVelocidadActual(location.getSpeed());
+                    coordenada.setTimestamp(new Date().getTime());
+
+
+                    Map<String, Object> coordenadaValues = coordenada.toMap();
+
+                    Map<String, Object> childUpdates = new HashMap<>();
+                    childUpdates.put("/posicion/", coordenadaValues);
+                    childUpdates.put("/historial/" + key, coordenadaValues);
+                    myRef.updateChildren(childUpdates);
+                    Log.e("request", jsonArray.toString());
 
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
@@ -141,6 +161,8 @@ public class AndroidLocationServices extends Service {
     @Override
     public void onDestroy() {
         // TODO Auto-generated method stub
+
+        Toast.makeText(this, "Servicio Detenido", Toast.LENGTH_SHORT).show();
         super.onDestroy();
 
         wakeLock.release();
