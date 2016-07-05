@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity  {
         //Escuchamos por posiciones de vendedores
         database = FirebaseDatabase.getInstance();
         referenciaVendedores = database.getReference(); //Hacemos referencia al nodo que corresponde al vendedor
-        DatabaseReference referenciaVendedores = database.getReference("vendedores/" + String.valueOf(globalVariable.getVendedorId()) + "/posicion/");
+        /*DatabaseReference referenciaVendedores = database.getReference("vendedores/" + String.valueOf(globalVariable.getVendedorId()) + "/posicion/");
         // myRef.child("vendedores").child(String.valueOf(globalVariable.getVendedorId()));
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity  {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        });*/
 
 
 
