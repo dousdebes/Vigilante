@@ -1,17 +1,24 @@
 package mkt.com.ar.vigilante;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,8 +44,15 @@ public class MainActivity extends AppCompatActivity  {
     Button btnPararServicio;
     FirebaseDatabase database;
     DatabaseReference myRef;
+    DatabaseReference referenciaVendedores;
     GoogleMap googleMap;
     Marker now;
+    Marker vendedor1;
+    Marker vendedor2;
+    Marker vendedor3;
+    Marker vendedor4;
+
+    public static final int MY_PERMISSIONS_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +86,28 @@ public class MainActivity extends AppCompatActivity  {
     protected void onStart() {
         super.onStart();
 
+        //Escuchamos por posiciones de vendedores
+        database = FirebaseDatabase.getInstance();
+        referenciaVendedores = database.getReference(); //Hacemos referencia al nodo que corresponde al vendedor
+        DatabaseReference referenciaVendedores = database.getReference("vendedores/" + String.valueOf(globalVariable.getVendedorId()) + "/posicion/");
+        // myRef.child("vendedores").child(String.valueOf(globalVariable.getVendedorId()));
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Coordenada coordenada = dataSnapshot.getValue(Coordenada.class);
+                if (coordenada != null) {
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
 
         btnIniciarServicio.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,22 +126,24 @@ public class MainActivity extends AppCompatActivity  {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                     Coordenada coordenada = dataSnapshot.getValue(Coordenada.class);
-                    tvLongitud.setText(String.valueOf(coordenada.getLongitud()));
-                    tvLatitud.setText(String.valueOf(coordenada.getLatitud()));
-                    tvVelocidadActual.setText("---");
+                        if (coordenada != null) {
+                            tvLongitud.setText(String.valueOf(coordenada.getLongitud()));
+                            tvLatitud.setText(String.valueOf(coordenada.getLatitud()));
+                            tvVelocidadActual.setText("---");
+                            LatLng punto = new LatLng(coordenada.getLatitud(), coordenada.getLongitud());
+                            // now.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.icono_marcador));
 
-                        LatLng punto = new LatLng(coordenada.getLatitud(), coordenada.getLongitud());
-                       // now.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.icono_marcador));
 
-
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(punto));
-                        //googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-                        animateMarker(now, punto, false);
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLng(punto));
+                            //googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                            animateMarker(now, punto, false);
                         /*now = googleMap.addMarker(new MarkerOptions().position(punto));
                         // Showing the current location in Google Map
 
                         // Zoom in the Google Map
                        */
+                        }
+
                     }
 
                     @Override
@@ -117,8 +155,25 @@ public class MainActivity extends AppCompatActivity  {
 
 
                 //Apenas se cree la actividad Iniciamos el servioco
-                Intent myIntent = new Intent(view.getContext(), AndroidLocationServices.class);
-                startService(myIntent);
+
+                //chequeamos permisos en runtime (requisito API 23)
+                if (ContextCompat.checkSelfPermission(view.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED &&
+                        ContextCompat.checkSelfPermission(view.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                                PackageManager.PERMISSION_GRANTED &&
+                        ContextCompat.checkSelfPermission(view.getContext(), Manifest.permission.INTERNET) ==
+                                PackageManager.PERMISSION_GRANTED
+
+                        ){
+                    Intent myIntent = new Intent(view.getContext(), AndroidLocationServices.class);
+                    startService(myIntent);
+                } else {
+
+                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET }, MY_PERMISSIONS_REQUEST);
+
+                    Toast.makeText(view.getContext(), "No tiene permisos de localizacion", Toast.LENGTH_LONG).show();
+                }
+
 
 
                 //Deshabilitamos controles
@@ -201,5 +256,33 @@ public class MainActivity extends AppCompatActivity  {
                 }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Log.e("PERMI", "le dio permiso");
+                    Intent myIntent = new Intent(this, AndroidLocationServices.class);
+                    startService(myIntent);
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 }

@@ -72,10 +72,14 @@ public class AndroidLocationServices extends Service {
         locationManager = (LocationManager) getApplicationContext()
                 .getSystemService(Context.LOCATION_SERVICE);
 
+
+
+
+
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 1, listener); //Update location cada 500ms o 0 mts
         } catch (SecurityException  e) {
-
+            e.printStackTrace();
             Log.e("Permisos", "No tiene permisos");
         }
 
